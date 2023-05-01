@@ -1,10 +1,10 @@
 # Code
 frontend: 
-backend: 
+backend:https://github.com/alicehack2020/octalogintech_backend 
 
 # live link
 frontend: 
-backend: 
+backend:https://octalogintech-backend.vercel.app/ 
 
 
  
