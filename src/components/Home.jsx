@@ -31,27 +31,7 @@ const Home = () => {
 
  //api call to send data
   const handleSubmit = () => {
-    // if (!info.fname) {
-    //   alert('Please enter your first name.');
-    //   return;
-    // }
-    // if (!info.lname) {
-    //   alert('Please enter your last name.');
-    //   return;
-    // }
-    // if (!info.wheel) {
-    //   alert('Please select the number of wheels.');
-    //   return;
-    // }
-    // if (!info.vehicleType) {
-    //   alert('Please select the type of vehicle.');
-    //   return;
-    // }
-    // if (!info.model) {
-    //   alert('Please select the type of model.');
-    //   return;
-    // }
-    // navigate('/success');
+    
   };
 
   const handleChangeWheel = (event) => {
@@ -151,7 +131,7 @@ const Home = () => {
         <RadioGroup
           name="wheel"
           value={info.wheel}
-          onClick={()=>handleChangeWheel()}
+          onClick={handleChangeWheel}
         >
           {wheel.map((e) => (
             <FormControlLabel
@@ -164,15 +144,28 @@ const Home = () => {
         </RadioGroup>
       </FormControl>
 
+      <Stack direction={'row'} spacing={2} gap={2}>
         <Button
         variant="contained"
         color="primary"
         fullWidth
-        onClick={changeScreen("vehicle")}
+        onClick={()=>changeScreen("userInfo")}
+        style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor:'#003FB9' }}
+        >
+        Prev
+        </Button>
+                
+        <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        onClick={()=>changeScreen("vehicle")}
         style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor:'#003FB9' }}
         >
         Next
         </Button>
+                
+      </Stack>
          </Grid> )
         }
         
@@ -187,7 +180,7 @@ const Home = () => {
         <RadioGroup
           name="vehicle"
           value={info.vehicleType}
-          onClick={()=>handleChangeVehicle()}
+          onClick={handleChangeVehicle}
         >
           {vehicle.map((e) => (
             <FormControlLabel
@@ -200,16 +193,28 @@ const Home = () => {
         </RadioGroup>
       </FormControl>
 
+      <Stack direction={'row'} spacing={2} gap={2}>
         <Button
         variant="contained"
         color="primary"
         fullWidth
-        
-        onClick={changeScreen("model")}
+        onClick={()=>changeScreen("wheel")}
+        style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor:'#003FB9' }}
+        >
+        Prev
+        </Button>
+                
+        <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        onClick={()=>changeScreen("model")}
         style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor:'#003FB9' }}
         >
         Next
         </Button>
+                
+      </Stack>
          </Grid> )
         }
 
@@ -224,7 +229,7 @@ const Home = () => {
         <RadioGroup
           name="model"
           value={info.model}
-          onClick={()=>handleChangeModel()}
+          onClick={handleChangeModel}
         >
           {model.map((e) => (
             <FormControlLabel
@@ -237,16 +242,28 @@ const Home = () => {
         </RadioGroup>
       </FormControl>
 
+      <Stack direction={'row'} spacing={2} gap={2}>
         <Button
         variant="contained"
         color="primary"
         fullWidth
-         
-        onClick={changeScreen("date")}
+        onClick={()=>changeScreen("vehicle")}
+        style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor:'#003FB9' }}
+        >
+        Prev
+        </Button>
+                
+        <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        onClick={()=>changeScreen("date")}
         style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor:'#003FB9' }}
         >
         Next
         </Button>
+                
+      </Stack>
          </Grid> )
         }
         
@@ -262,21 +279,34 @@ const Home = () => {
           <Input type='date'></Input>     
         </Stack>
         
-        <Stack >     
-        <Typography>End Date</Typography>
-        <Input type='date'>End Date</Input>
+         <Stack>     
+          <Typography>End Date</Typography>
+          <Input type='date'>End Date</Input>
         </Stack>
 
+        <Stack direction={'row'} spacing={2} gap={2}>
         <Button
         variant="contained"
         color="primary"
         fullWidth
-         
+        onClick={()=>changeScreen("model")}
+        style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor:'#003FB9' }}
+        >
+        Prev
+        </Button>
+                
+        <Button
+        variant="contained"
+        color="primary"
+        fullWidth
         onClick={handleSubmit}
         style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor:'#003FB9' }}
         >
-        Next
+        Submit
         </Button>
+                
+        </Stack>
+       
          </Grid> )
         }     
         
