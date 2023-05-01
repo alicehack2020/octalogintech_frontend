@@ -10,12 +10,17 @@ import {
   FormControlLabel,
   Input,
   Stack,
+  Snackbar,
+  IconButton,
 } from '@mui/material';
- 
+import { ToastContainer, toast } from 'react-toastify';
+  import 'react-toastify/dist/ReactToastify.css';
+ import axios from "axios"
+import { url } from '../constants/constants';
 const Home = () => {
   const [step, setStep] = useState('userInfo');
-  const vehicle = ['a', 'b', 'c', 'd'];
-  const model = ['x', 'y', 'z', 'f'];
+  const [vehicle,setvehicle] = useState([]);
+  const [model,setModel] = useState([]);
 
   const wheel = ["2", "4"]
   
@@ -29,34 +34,103 @@ const Home = () => {
     endDate: '',
   });
 
+
  //api call to send data
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     
+    if (info.startDate === info.endDate)
+    {
+      toast("start date and end date is same")
+    }
+    else if (info.startDate > info.endDate)
+    {
+      toast("end date must be greater than start date")
+    }
+    else {
+  await axios.post(`${url}/book`,info)
+    .then(response => {
+      toast(response.data.message)
+      setStep("userInfo")
+      setInfo({})
+  })
+  .catch(error => {
+    toast(error.data.message)
+  }); 
+  }
+
   };
 
+
+  //api get vehicle
+  const handleVehicelData = async() => {
+    await axios.get(`${url}/vehicle?wheelData=${info.wheel}`)
+     .then(response => {
+       console.log('vehicle:', response.data);
+       setvehicle(response.data.data)
+     })
+     .catch(error => {
+       console.error('Error:', error);
+     });
+  };
+  
+ //api get Model
+ const handleModelData = async() => {
+  await axios.get(`${url}/model?wheelData=${info.wheel}&vehicleData=${info.vehicleType}`)
+   .then(response => {
+     console.log('Model:', response.data);
+    setModel(response.data.data)
+   })
+   .catch(error => {
+     console.error('Error:', error);
+   });
+};
+
+
+
   const handleChangeWheel = (event) => {
-    const wheel = event.target.value;
-    setInfo({ ...info, wheel: wheel });
+    const wheelData = event.target.value;
+    setInfo({ ...info, wheel: wheelData });
   };
 
   const handleChangeVehicle = (event) => {
-    const vehicle = event.target.value;
-    setInfo({ ...info, vehicleType: vehicle });
+    const vehicleData = event.target.value;
+    setInfo({ ...info, vehicleType: vehicleData });
   };
 
   const handleChangeModel = (event) => {
-    const model = event.target.value;
-    setInfo({ ...info, model: model });
+    const modelData = event.target.value;
+    setInfo({ ...info, model: modelData });
   };
 
 
   const changeScreen = (screen) => {
-    setStep(screen)
-    console.log(step)
+   
+    
+    if ("vehicle" === screen)
+    {
+
+      handleVehicelData()
+      setStep(screen)
+    }
+    else if ("model" === screen)
+    {
+      handleModelData()
+      setStep(screen)
+    }
+    else {
+      setStep(screen)
+    }
   }
 
  
 
+ 
+
+  
+
+ 
+ 
+  
   return (
     <>
       <Grid
@@ -106,6 +180,7 @@ const Home = () => {
               />
 
               <Button
+                disabled={info.fname && info.lname ?false:true}
                 variant="contained"
                 color="primary"
                 fullWidth
@@ -113,7 +188,7 @@ const Home = () => {
                 style={{
                   marginTop: '1rem',
                   fontWeight: 'bold',
-                  backgroundColor: '#003FB9',
+                  backgroundColor: info.fname && info.lname ?'#003FB9':'gray',
                 }}
               >
                 Next
@@ -146,6 +221,7 @@ const Home = () => {
 
       <Stack direction={'row'} spacing={2} gap={2}>
         <Button
+              
         variant="contained"
         color="primary"
         fullWidth
@@ -155,12 +231,13 @@ const Home = () => {
         Prev
         </Button>
                 
-        <Button
+      <Button
+       disabled={info.wheel?false:true}   
         variant="contained"
         color="primary"
         fullWidth
         onClick={()=>changeScreen("vehicle")}
-        style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor:'#003FB9' }}
+        style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor:info.wheel ?'#003FB9':'gray' }}
         >
         Next
         </Button>
@@ -178,16 +255,17 @@ const Home = () => {
       <Typography style={{color:'#0B3558',fontWeight:'bold',fontSize:'3rem'}} align='center'>Type of vehicle</Typography>     
       <FormControl>
         <RadioGroup
+                   
           name="vehicle"
           value={info.vehicleType}
           onClick={handleChangeVehicle}
         >
           {vehicle.map((e) => (
             <FormControlLabel
-              key={e}
-              value={e}
+              key={e._id}
+              value={e.vehicle}
               control={<Radio />}
-              label={e}
+              label={e.vehicle}
             />
           ))}
         </RadioGroup>
@@ -205,11 +283,12 @@ const Home = () => {
         </Button>
                 
         <Button
+        disabled={info.vehicleType ? false : true}           
         variant="contained"
         color="primary"
         fullWidth
         onClick={()=>changeScreen("model")}
-        style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor:'#003FB9' }}
+        style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor: info.vehicleType ?'#003FB9':'gray' }}
         >
         Next
         </Button>
@@ -224,7 +303,7 @@ const Home = () => {
     {
       step === 'model' && (
       <Grid item xs={3} style={{ margin: '10px' }}>
-      <Typography style={{color:'#0B3558',fontWeight:'bold',fontSize:'3rem'}} align='center'>Type of vehicle</Typography>     
+      <Typography style={{color:'#0B3558',fontWeight:'bold',fontSize:'3rem'}} align='center'>Select Model</Typography>     
       <FormControl>
         <RadioGroup
           name="model"
@@ -233,7 +312,7 @@ const Home = () => {
         >
           {model.map((e) => (
             <FormControlLabel
-              key={e}
+              key={e._id}
               value={e}
               control={<Radio />}
               label={e}
@@ -254,11 +333,12 @@ const Home = () => {
         </Button>
                 
         <Button
+        disabled={info.model ? false : true}
         variant="contained"
         color="primary"
         fullWidth
         onClick={()=>changeScreen("date")}
-        style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor:'#003FB9' }}
+        style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor: info.model ?'#003FB9':'gray'}}
         >
         Next
         </Button>
@@ -276,12 +356,19 @@ const Home = () => {
       
         <Stack >
           <Typography>Start Date</Typography>
-          <Input type='date'></Input>     
+          <Input type='date' value={info.startDate}
+            onChange={(e) =>
+              setInfo({ ...info, startDate: e.target.value })
+             }></Input>     
         </Stack>
         
          <Stack>     
           <Typography>End Date</Typography>
-          <Input type='date'>End Date</Input>
+            <Input type='date'
+            value={info.endDate}
+            onChange={(e) =>
+              setInfo({ ...info, endDate: e.target.value })
+             }>End Date</Input>
         </Stack>
 
         <Stack direction={'row'} spacing={2} gap={2}>
@@ -296,11 +383,12 @@ const Home = () => {
         </Button>
                 
         <Button
+        disabled={info.startDate&&info.endDate ? false : true}
         variant="contained"
         color="primary"
         fullWidth
         onClick={handleSubmit}
-        style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor:'#003FB9' }}
+        style={{ marginTop: '1rem',fontWeight:'bold',backgroundColor: info.startDate&&info.endDate?'#003FB9':'gray'}}
         >
         Submit
         </Button>
@@ -308,12 +396,11 @@ const Home = () => {
         </Stack>
        
          </Grid> )
-        }     
-        
-     
+        }       
+        <ToastContainer />
       </Grid>
      
-     
+      
     </>
     
   );
